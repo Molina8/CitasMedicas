@@ -1,9 +1,7 @@
 package com.citasMedicas.services.impl;
 
 import java.util.List;
-import java.util.Optional;
 
-import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,5 +32,14 @@ public class CitaServiceImpl implements CitaService {
 		return  citaRep.findById(id).get();
 	}
 
-	
+	@Override
+	public void deleteCita(Long id) {
+		citaRep.deleteById(id);
+	}
+
+	@Override
+	public List<Long> listMedicosFromPaciente(int paciente) {
+		return citaRep.listMedicosFromPaciente(paciente);
+	}
 }
+

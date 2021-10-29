@@ -4,18 +4,32 @@ import java.io.Serializable;
 
 import javax.persistence.*;
 
+
+
 @Entity
 @Table(name="diagnostico")
 public class Diagnostico implements Serializable {
 
 	@Id
 	@Column(name = "diagnostico_id")
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idDiagnostico;
 	private String valoracionEspecialista;
 	private String enfermedad;
 	
+	@OneToOne
+	@JoinColumn(name = "cita" )
+	private Cita citaAsociada;
+	
 	private static final long serialVersionUID = 1L;
+
+	public Cita getCitaAsociada() {
+		return citaAsociada;
+	}
+
+	public void setCitaAsociada(Cita citaAsociada) {
+		this.citaAsociada = citaAsociada;
+	}
 
 	public Long getIdDiagnostico() {
 		return idDiagnostico;

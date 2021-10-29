@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.citasMedicas.dominio.Cita;
 import com.citasMedicas.dominio.Medico;
 import com.citasMedicas.services.impl.MedicoServiceImpl;
 
@@ -32,6 +33,18 @@ public class MedicoController {
 	public List<Medico> listAllMedicos(){
 		return medicoServ.listAllMedicos();
 	}
+	
+	@GetMapping(path = "/{id}")
+	public ResponseEntity<Medico> getMedico(@PathVariable Long id){
+		Medico m;
+		try {
+			m = medicoServ.findById(id);
+		}catch (NullPointerException e) {
+			return new ResponseEntity<Medico>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<Medico>(m,HttpStatus.OK);
+	}
+	
 	@PostMapping(path = "/register", 
 	        consumes = MediaType.APPLICATION_JSON_VALUE, 
 	        produces = MediaType.APPLICATION_JSON_VALUE)
@@ -44,7 +57,7 @@ public class MedicoController {
 		    }
 	}
 	
-	@DeleteMapping(value = "/{id}")
+	@DeleteMapping(value = "/delete/{id}")
 	public ResponseEntity<Long> deleteMedico(@PathVariable Long id){
 		try {
 			medicoServ.deleteMedico(id);

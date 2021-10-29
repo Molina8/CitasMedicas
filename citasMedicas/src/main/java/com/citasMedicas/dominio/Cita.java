@@ -20,6 +20,10 @@ public class Cita implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "paciente")
 	private Paciente pacAsociado;
+	
+	@ManyToOne
+	@JoinColumn(name = "medico")
+	private Medico medAsociado;
 
 	private static final long serialVersionUID = 1L;
 
@@ -30,6 +34,14 @@ public class Cita implements Serializable {
 
 	public void setIdCita(Long idCita) {
 		this.idCita = idCita;
+	}
+
+	public Medico getMedAsociado() {
+		return medAsociado;
+	}
+
+	public void setMedAsociado(Medico medAsociado) {
+		this.medAsociado = medAsociado;
 	}
 
 	public Date getFechaHora() {

@@ -15,8 +15,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
+import com.citasMedicas.dominio.Cita;
+import com.citasMedicas.dominio.Medico;
 import com.citasMedicas.dominio.Paciente;
+import com.citasMedicas.dominio.PacienteMedico;
+import com.citasMedicas.services.impl.MedicoServiceImpl;
+import com.citasMedicas.services.impl.PacienteMedicoServiceImpl;
 import com.citasMedicas.services.impl.PacienteServiceImpl;
 
 
@@ -25,11 +29,27 @@ import com.citasMedicas.services.impl.PacienteServiceImpl;
 public class PacienteController {
 	@Autowired
 	private PacienteServiceImpl pacienteServ;
+	@Autowired 
+	private MedicoServiceImpl medicoServ;
+	
+	@Autowired
+	private PacienteMedicoServiceImpl pacMedServ;
 
 	
 	@GetMapping(path = "/list",produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<Paciente> listAllPacientes(){
 		return pacienteServ.listAllPacientes();
+	}
+	
+	@GetMapping(path = "/{id}")
+	public ResponseEntity<Paciente> getPaciente(@PathVariable Long id){
+		Paciente p;
+		try {
+			p = pacienteServ.findById(id);
+		}catch (NullPointerException e) {
+			return new ResponseEntity<Paciente>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<Paciente>(p,HttpStatus.OK);
 	}
 	
 	
@@ -38,6 +58,9 @@ public class PacienteController {
 	        produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Paciente> create(@RequestBody Paciente p) throws ServerException{
 		Paciente pac= pacienteServ.savePaciente(p);
+		Medico m = medicoServ.getMedicoConMenosPacientes();
+		PacienteMedico pm = asignarMedicoPaciente(pac,m);
+		pacMedServ.savePacMed(pm);
 		 if (pac == null) {
 		        throw new ServerException("No valido");
 		    } else {
@@ -45,7 +68,16 @@ public class PacienteController {
 		    }
 	}
 	
-	@DeleteMapping(value = "/{id}")
+	private PacienteMedico asignarMedicoPaciente(Paciente pac, Medico m) {
+		PacienteMedico pacMed = new PacienteMedico();
+		pacMed.setMed(m);
+		pacMed.setPac(pac);
+		medicoServ.addPaciente(m);
+		return pacMed;
+	}
+
+
+	@DeleteMapping(value = "/delete/{id}")
 	public ResponseEntity<Long> deletePaciente(@PathVariable Long id){
 		try {
 			pacienteServ.deletePaciente(id);

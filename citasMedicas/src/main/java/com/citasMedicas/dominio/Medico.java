@@ -32,6 +32,8 @@ public class Medico extends Usuario implements Serializable{
 		this.numPacientes = numPacientes;
 	}
 	
-	
+	public void addPaciente() {
+		numPacientes++;
+	}
 
 }
