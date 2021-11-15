@@ -1,6 +1,7 @@
 package com.citasMedicas.dominio;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.*;
 
@@ -16,6 +17,8 @@ public class Paciente extends Usuario implements Serializable{
 	private String direccion;
 	private static final long serialVersionUID = 1L;
 	
+	@ManyToMany
+	private List<Medico> medicos;
 	
 	public String getNSS() {
 		return NSS;
@@ -44,6 +47,14 @@ public class Paciente extends Usuario implements Serializable{
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
+	public List<Medico> getMedicos() {
+		return medicos;
+	}
+	public void setMedicos(List<Medico> medicos) {
+		this.medicos = medicos;
+	}
+	
+	
 	
 	
 }

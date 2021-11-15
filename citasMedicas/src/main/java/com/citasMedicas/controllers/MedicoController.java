@@ -1,6 +1,8 @@
 package com.citasMedicas.controllers;
 
 import java.rmi.ServerException;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,54 +21,58 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.citasMedicas.dominio.Cita;
+
 import com.citasMedicas.dominio.Medico;
+import com.citasMedicas.dominio.Usuario;
+import com.citasMedicas.dominio.DTO.MedicoDTO;
+import com.citasMedicas.dominio.DTO.MessageDTO;
+import com.citasMedicas.dominio.DTO.UsuarioDTO;
+import com.citasMedicas.dominio.converter.Converter;
 import com.citasMedicas.services.impl.MedicoServiceImpl;
 
 @RestController
-@RequestMapping("/medico")
+@RequestMapping("/medicos")
+@CrossOrigin("http://localhost:4200")
 public class MedicoController {
 	@Autowired
 	private MedicoServiceImpl medicoServ;
-
+	@Autowired
+	private Converter conv;
 	
-	@GetMapping(path = "/list",produces = {"application/json"})
-	public List<Medico> listAllMedicos(){
-		return medicoServ.listAllMedicos();
+	@GetMapping
+	public ResponseEntity<List<MedicoDTO>> listAllMedicos(){
+		List<MedicoDTO> lista = new ArrayList<MedicoDTO>();
+		this.medicoServ.listAllMedicos().stream().forEach(m->lista.add(conv.mtoMDTO(m)));
+		return ResponseEntity.ok(lista);
 	}
 	
-	@GetMapping(path = "/{id}")
-	public ResponseEntity<Medico> getMedico(@PathVariable Long id){
+	@GetMapping("/{id}")
+	public ResponseEntity<MessageDTO> getMedico (@PathVariable Long id){
 		Medico m;
 		try {
 			m = medicoServ.findById(id);
 		}catch (NullPointerException e) {
-			return new ResponseEntity<Medico>(HttpStatus.NOT_FOUND);
+			return ResponseEntity.ok(new MessageDTO(404, "No existe el medico"));
 		}
-		return new ResponseEntity<Medico>(m,HttpStatus.OK);
+		return ResponseEntity.ok(new MessageDTO(100, conv.mtoMDTO(m)));
 	}
 	
-	@PostMapping(path = "/register", 
-	        consumes = MediaType.APPLICATION_JSON_VALUE, 
-	        produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Medico> create(@RequestBody Medico m) throws ServerException{
-		Medico med = medicoServ.saveMedico(m);
-		 if (med == null) {
-		        throw new ServerException("No valido");
-		    } else {
-		        return new ResponseEntity<>(med, HttpStatus.CREATED);
-		    }
-	}
-	
-	@DeleteMapping(value = "/delete/{id}")
-	public ResponseEntity<Long> deleteMedico(@PathVariable Long id){
-		try {
-			medicoServ.deleteMedico(id);
+	@PostMapping(path = "/register")
+	public ResponseEntity<MessageDTO> registrarMedico (@RequestBody MedicoDTO medicoDTO) {
+		Medico m;
+		try{
+			m = conv.mDTOtoM(medicoDTO);
+			medicoServ.saveMedico(m);
 		}catch (NullPointerException e) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			return ResponseEntity.ok(new MessageDTO(404, "No se pudo registrar el usuario"));
 		}
-		
-		return new ResponseEntity<>(id,HttpStatus.OK);
+		return ResponseEntity.ok(new MessageDTO(100, conv.mtoMDTO(m)));
+	}
+	
+	@DeleteMapping("/delete/{id}")
+	public ResponseEntity<String> deleteMedico(@PathVariable Long id){
+		medicoServ.deleteMedico(id);
+		return ResponseEntity.ok("Medico eliminado correctamente");
 	}
 	
 	

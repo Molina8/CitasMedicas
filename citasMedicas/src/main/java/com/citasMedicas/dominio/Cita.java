@@ -1,8 +1,8 @@
 package com.citasMedicas.dominio;
 
 import java.io.Serializable;
+import java.util.Date;
 
-import java.sql.Date;
 import javax.persistence.*;
 
 
@@ -44,12 +44,12 @@ public class Cita implements Serializable {
 		this.medAsociado = medAsociado;
 	}
 
-	public Date getFechaHora() {
+	public java.util.Date getFechaHora() {
 		return fechaHora;
 	}
 
-	public void setFechaHora(Date fechaHora) {
-		this.fechaHora = fechaHora;
+	public void setFechaHora(Date date) {
+		this.fechaHora = date;
 	}
 
 	public String getMotivoCita() {

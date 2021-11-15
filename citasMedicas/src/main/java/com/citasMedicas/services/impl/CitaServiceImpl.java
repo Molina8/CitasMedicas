@@ -37,9 +37,6 @@ public class CitaServiceImpl implements CitaService {
 		citaRep.deleteById(id);
 	}
 
-	@Override
-	public List<Long> listMedicosFromPaciente(int paciente) {
-		return citaRep.listMedicosFromPaciente(paciente);
-	}
+	
 }
 

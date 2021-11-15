@@ -38,4 +38,20 @@ public class UsuarioServiceImpl implements UsuarioService {
 		return usuarioRep.save(u);
 	}
 
+	@Override
+	public Usuario findById(Long id) {
+		return usuarioRep.findById(id).get();
+	}
+
+	@Override
+	public void deleteUser(Long id) {
+		usuarioRep.deleteById(id);
+		
+	}
+
+	@Override
+	public Usuario login(String userName, String passWord) {
+		return findByUsername(userName);
+	}
+
 }

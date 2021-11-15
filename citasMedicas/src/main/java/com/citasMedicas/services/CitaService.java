@@ -10,5 +10,5 @@ public interface CitaService {
 	public abstract Cita saveCita(Cita c);
 	public abstract Cita findById(Long id);
 	public abstract void deleteCita(Long id);
-	public abstract List<Long> listMedicosFromPaciente(int paciente);
+
 }
